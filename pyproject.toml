@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "mining-farm"
+version = "0.1.0"
+description = ""
+authors = ["Your name <example@example.com>"]
+readme = "README.md"
+packages = [{include = "mining_farm"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+ecdsa = "^0.19.1"
+Flask = "^3.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
