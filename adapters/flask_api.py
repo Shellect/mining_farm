@@ -21,6 +21,11 @@ def handle_exception(e):
 def index():
     return render_template("base.html")
 
+@app.get('/transaction_list')
+def transaction_list():
+    return render_template("transaction_list.html",)
+
+
 @app.get("/wallet/new")
 def new_wallet():
     wallet = Wallet()
@@ -44,3 +49,7 @@ def new_transaction():
 
     if not verify_signature(values["sender"], transaction, values["signature"]):
         raise InvalidSignatureError("unknown")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
