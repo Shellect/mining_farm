@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
 from entities.transaction import Transaction
 from exceptions import CryptoException, InvalidTransactionError, InvalidSignatureError
@@ -16,6 +16,10 @@ def handle_exception(e):
         "details": vars(e) if hasattr(e, '__dict__') else {}
     }), 400
 
+
+@app.get("/")
+def index():
+    return render_template("base.html")
 
 @app.get("/wallet/new")
 def new_wallet():
