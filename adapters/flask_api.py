@@ -44,3 +44,7 @@ def new_transaction():
 
     if not verify_signature(values["sender"], transaction, values["signature"]):
         raise InvalidSignatureError("unknown")
+
+@app.get("/wallet")
+def wallet_dashboard():
+    return render_template("wallet_dashboard.html")
