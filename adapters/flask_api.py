@@ -5,6 +5,8 @@ from exceptions import CryptoException, InvalidTransactionError, InvalidSignatur
 from infrastructure.crypto import verify_signature
 from use_cases.wallet_operations import Wallet
 
+import json
+
 app = Flask(__name__)
 
 
@@ -21,9 +23,12 @@ def handle_exception(e):
 def index():
     return render_template("base.html")
 
+
 @app.get('/transaction_list')
 def transaction_list():
-    return render_template("transaction_list.html",)
+    with open('transactions.json', 'r', encoding='utf-8') as f:
+        transactions = json.load(f)
+    return render_template("transaction_list.html", transactions=transactions)
 
 
 @app.get("/wallet/new")
