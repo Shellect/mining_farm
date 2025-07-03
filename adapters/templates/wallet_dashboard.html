@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Wallet Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .wallet-info { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .wallet-info.hidden { display: none; }
+        button { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .key { word-break: break-all; font-family: monospace; background: #e9ecef; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        .balance { font-size: 24px; font-weight: bold; color: #28a745; text-align: center; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏦 Wallet Dashboard</h1>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="createWallet()">Create New Wallet</button>
+        </div>
+
+        <div id="walletInfo" class="wallet-info hidden">
+            <h3>💰 Your Wallet</h3>
+            <div class="balance">
+                Balance: <span id="balance">0.0</span> Coins
+            </div>
+            <div>
+                <strong>Public Key:</strong>
+                <div id="publicKey" class="key"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createWallet() {
+            fetch('/wallet/new')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('publicKey').textContent = data.public_key;
+                    document.getElementById('balance').textContent = data.balance;
+                    document.getElementById('walletInfo').classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error creating wallet');
+                });
+        }
+    </script>
+</body>
+</html>
