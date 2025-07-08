@@ -2,28 +2,93 @@
 
 {% block content %}
 
-<div class="features">
-    <h3>Список транзакций</h3>
-    <table>
-        <thead>
-            <tr>ID</tr>
-            <tr>Дата</tr>
-            <tr>Сумма</tr>
-            <tr>Описание</tr>
-            <tr>Категория</tr>
-            <tr>Cтатус</tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-            <tr>
-                <td>{{ transaction.id }}</td>
-                <td>{{ transaction.date }}</td>
-                <td>{{ transaction.amount }} {{transaction.currency}}</td>
-                <td>{{ transaction.description }}</td>
-                <td>{{ transaction.category }}</td>
-                <td>{{ transaction.status }}</td>
-            </tr>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <h2 class="text-center mb-4">📋 Transaction History</h2>
+
+            {% if transactions %}
+            {% for tx in transactions %}
+            <div class="transaction-card position-relative">
+                <div class="tx-header">
+                    <span class="tx-id">TX-{{ loop.index }}</span>
+                    <span class="tx-hash">{{ tx.tx_hash|truncate(12) }}</span>
+                </div>
+
+                <div class="tx-body">
+                    <div class="tx-address">
+                        <div class="tx-address-label">From</div>
+                        <div class="tx-address-value" title="{{ tx.sender }}">{{ tx.sender|truncate(20) }}</div>
+                    </div>
+
+                    <div class="tx-address">
+                        <div class="tx-address-label">To</div>
+                        <div class="tx-address-value" title="{{ tx.recipient }}">{{ tx.recipient|truncate(20) }}</div>
+                    </div>
+
+                    <div class="tx-amount">
+                            <span class="{% if tx.amount >= 0 %}amount-positive{% else %}amount-negative{% endif %}">
+                                {{ tx.amount }} Coins
+                            </span>
+                    </div>
+                </div>
+
+                {% if tx.signature %}
+                <button class="btn btn-sm btn-outline-secondary tx-signature-btn"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#signature-{{ loop.index }}">
+                    Signature
+                </button>
+                {% endif %}
+            </div>
+
+            {% if tx.signature %}
+            <div class="collapse" id="signature-{{ loop.index }}">
+                <div class="card card-body py-2 mb-3">
+                    <small class="text-muted">Signature:</small>
+                    <code style="font-size: 11px; word-break: break-all;">{{ tx.signature }}</code>
+                </div>
+            </div>
+            {% endif %}
             {% endfor %}
-    </table>
+            {% else %}
+            <div class="alert alert-info text-center">
+                No transactions found
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="{{ url_for('wallet_dashboard') }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-wallet me-2"></i>To Wallet
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-4">
+
+        <li class="page-item {% if not has_previous_page %}disabled{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('transaction_list', page=current_page-1) if has_previous_page else '#' }}">
+                &laquo; Предыдущая
+            </a>
+        </li>
+
+
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == current_page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('transaction_list', page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+
+
+        <li class="page-item {% if not has_next_page %}disabled{% endif %}">
+            <a class="page-link"
+               href="{{ url_for('transaction_list', page=current_page+1) if has_next_page else '#' }}">
+                Следующая &raquo;
+            </a>
+        </li>
+    </ul>
+</nav>
 {% endblock %}

@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request, render_template
 
+from controller import load_json
 from entities.transaction import Transaction
 from exceptions import CryptoException, InvalidTransactionError, InvalidSignatureError
 from infrastructure.crypto import verify_signature
 from use_cases.wallet_operations import Wallet
+from math import ceil
 
 import json
 
@@ -26,9 +28,19 @@ def index():
 
 @app.get('/transaction_list')
 def transaction_list():
-    with open('transactions.json', 'r', encoding='utf-8') as f:
-        transactions = json.load(f)
-    return render_template("transaction_list.html", transactions=transactions)
+    page = request.args.get('page', 1, type=int)
+    transactions = load_json('transactions.json')
+    transactions_len = len(transactions)
+    total_pages = ceil(transactions_len / 4)
+    start = (page - 1) * 4
+    end = page * 4
+    page_transactions = transactions[start:end]
+    return render_template("transaction_list.html",
+                           transactions=page_transactions,
+                           current_page=page,
+                           total_pages=total_pages,
+                           has_next_page=page < total_pages,
+                           has_previous_page=page > 1)
 
 
 @app.get("/wallet/new")
@@ -54,6 +66,7 @@ def new_transaction():
 
     if not verify_signature(values["sender"], transaction, values["signature"]):
         raise InvalidSignatureError("unknown")
+
 
 @app.get("/wallet")
 def wallet_dashboard():
